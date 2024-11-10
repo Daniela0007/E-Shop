@@ -5,13 +5,19 @@ namespace Core.Specifications;
 
 public class ProductSpecification : BaseSpecification<Product>
 {
-  public ProductSpecification(string? brand, string? type, string? sort) : base(x =>
-    (string.IsNullOrWhiteSpace(brand) || x.Brand == brand) &&
-    (string.IsNullOrWhiteSpace(type) || x.Type == type)
+  public ProductSpecification(ProductSpecificationParams specParams) : base(x =>
+    (string.IsNullOrWhiteSpace(specParams.Search) || x.Name.ToLower().Contains(specParams.Search)) &&
+    (specParams.Brands.Count == 0 || specParams.Brands.Contains(x.Brand)) &&
+    (specParams.Types.Count == 0 || specParams.Types.Contains(x.Type))
   )
   {
+    //for the first page, we skip 0, then take 5
+    //for the second page, we skip 5, then take 5
+    // etc...
+    ApplyPaging(specParams.PageSize * (specParams.PageIndex - 1), specParams.PageSize);
+
     //adding ordering functionality
-    switch (sort)
+    switch (specParams.Sort)
     {
       case "priceAsc":
         AddOrderBy(x => x.Price);
