@@ -25,6 +25,8 @@ public class ProductsRepository(StoreContext context) : IProductRepository
         return await context.Products.Select(x => x.Brand)
           .Distinct()
           .ToListAsync();
+
+          
     }
 
     public async Task<IReadOnlyList<Product>> GetProductAsync(string? brand, string? type, string? sort)
